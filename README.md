@@ -1,5 +1,9 @@
 # 🤖 Xây Dựng Chatbot AI với LangChain và Python
 
+## RAG PIPELINE
+![rag](https://media.licdn.com/dms/image/v2/D4D22AQHkZ0xgIxqfdg/feedshare-shrink_800/feedshare-shrink_800/0/1727339338528?e=1733356800&v=beta&t=Br64BoIAlPWszorZYhPtn1dFSYsrOqlqtJJSOyOh78Y)
+
+
 ## 📋 Yêu cầu hệ thống
 
 - Python 3.8 trở lên (Tải tại: https://www.python.org/downloads/)
