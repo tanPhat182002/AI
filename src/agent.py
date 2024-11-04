@@ -4,7 +4,6 @@ from langchain_openai import ChatOpenAI  # Model ngôn ngữ OpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent  # Tạo và thực thi agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # Xử lý prompt
 from seed_data import seed_milvus, connect_to_milvus  # Kết nối với Milvus
-import streamlit as st  # Framework UI
 from langchain.callbacks import StreamlitCallbackHandler  # Xử lý callback cho Streamlit
 from langchain.memory import StreamlitChatMessageHistory  # Lưu trữ lịch sử chat
 from langchain.retrievers import EnsembleRetriever  # Kết hợp nhiều retriever
@@ -83,76 +82,3 @@ def get_llm_and_agent(_retriever) -> AgentExecutor:
 # Khởi tạo retriever và agent
 retriever = get_retriever()
 agent_executor = get_llm_and_agent(retriever)
-
-# === PHẦN STREAMLIT UI ===
-"""
-Phần UI sử dụng Streamlit với các tính năng:
-1. Hiển thị tiêu đề và mô tả
-2. Lưu trữ lịch sử chat trong session state
-3. Hiển thị tin nhắn dạng chat UI
-4. Xử lý input người dùng với streaming output
-5. Tích hợp với LangChain callbacks
-
-Các thành phần chính:
-- StreamlitChatMessageHistory: Lưu trữ lịch sử chat
-- StreamlitCallbackHandler: Xử lý streaming output
-- st.session_state: Quản lý trạng thái phiên làm việc
-- st.chat_message: Hiển thị giao diện chat
-
-Luồng xử lý:
-1. Người dùng nhập câu hỏi
-2. Hiển thị câu hỏi trong giao diện chat
-3. Gọi agent để xử lý với chat history
-4. Stream kết quả về giao diện
-5. Lưu response vào lịch sử
-"""
-
-# Khởi tạo lưu trữ lịch sử chat
-msgs = StreamlitChatMessageHistory(key="langchain_messages")
-
-# Thiết lập giao diện
-st.title("💬 AI Assistant")
-st.caption("🚀 A Streamlit chatbot powered by LangChain and OpenAI")
-
-# Khởi tạo session state cho tin nhắn nếu chưa có
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "How can I help you?"}]
-    msgs.add_ai_message("How can I help you?")
-
-# Hiển thị lịch sử chat
-for msg in st.session_state.messages:
-    role = "assistant" if msg["role"] == "assistant" else "human"
-    st.chat_message(role).write(msg["content"])
-
-# Xử lý input từ người dùng
-if prompt := st.chat_input("Ask me anything about Stack AI and related topics!"):
-    # Thêm tin nhắn người dùng vào giao diện
-    st.session_state.messages.append({"role": "human", "content": prompt})
-    st.chat_message("human").write(prompt)
-    msgs.add_user_message(prompt)
-
-    # Hiển thị phản hồi của assistant
-    with st.chat_message("assistant"):
-        # Tạo container để hiển thị streaming output
-        st_callback = StreamlitCallbackHandler(st.container())
-        
-        # Lấy lịch sử chat (trừ tin nhắn mới nhất)
-        chat_history = [
-            {"role": msg["role"], "content": msg["content"]}
-            for msg in st.session_state.messages[:-1]
-        ]
-
-        # Gọi agent để xử lý câu hỏi
-        response = agent_executor.invoke(
-            {
-                "input": prompt,
-                "chat_history": chat_history
-            },
-            {"callbacks": [st_callback]}
-        )
-
-        # Hiển thị và lưu phản hồi
-        output = response["output"]
-        st.session_state.messages.append({"role": "assistant", "content": output})
-        msgs.add_ai_message(output)
-        st.write(output)
