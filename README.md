@@ -1,7 +1,10 @@
 # 🤖 Xây Dựng Chatbot AI với LangChain và Python
 
 ## RAG PIPELINE
-<img src="https://media.licdn.com/dms/image/v2/D4D22AQHkZ0xgIxqfdg/feedshare-shrink_800/feedshare-shrink_800/0/1727339338528?e=1733356800&v=beta&t=Br64BoIAlPWszorZYhPtn1dFSYsrOqlqtJJSOyOh78Y" alt="rag" width="400"/>
+<p align="center">
+  <img src="https://media.licdn.com/dms/image/v2/D4D22AQHhEYuJKGao6A/feedshare-shrink_1280/feedshare-shrink_1280/0/1710748558987?e=1733356800&v=beta&t=5MXnGzPFdue8HbgT2_GFFKT_4qPuz14jqdCsK9MosFo" alt="rag" width="400"/>
+</p>
+
 
 ## 📋 Yêu cầu hệ thống
 
