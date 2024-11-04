@@ -152,7 +152,7 @@ def main():
         - Các biến môi trường cần thiết (như OPENAI_API_KEY) đã được cấu hình
     """
     # Test seed_milvus với dữ liệu local
-    seed_milvus('http://localhost:19530', 'data_test', 'stack.json', 'data_v3')
+    seed_milvus('http://localhost:19530', 'data_test', 'stack.json', 'data')
     # Test seed_milvus_live với URL trực tiếp
     # seed_milvus_live('https://www.stack-ai.com/docs', 'http://localhost:19530', 'data_test_live_v2', 'stack-ai')
 
