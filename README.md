@@ -110,6 +110,15 @@ Nếu gặp vấn đề:
 
 ## 📚 Tài liệu tham khảo
 
-- LangChain: https://python.langchain.com/docs
-- Milvus: https://milvus.io/docs
+- LangChain: https://python.langchain.com/docs/introduction/
+  - Agents: https://python.langchain.com/docs/tutorials/qa_chat_history/#tying-it-together-1
+  - BM25: https://python.langchain.com/docs/integrations/retrievers/bm25/#create-a-new-retriever-with-documents
+  - How to combine results from multiple retrievers: https://python.langchain.com/docs/how_to/ensemble_retriever/
+  - Langchain Milvus: https://python.langchain.com/docs/integrations/vectorstores/milvus/#initialization
+  - Recursive URL: https://python.langchain.com/docs/integrations/document_loaders/recursive_url/#overview
+  - Langchain Streamlit: https://python.langchain.com/docs/integrations/callbacks/streamlit/#installation-and-setup
+  - Langchain Streamlit: https://python.langchain.com/docs/integrations/providers/streamlit/#memory
+- Milvus Standalone: https://milvus.io/docs/v2.0.x/install_standalone-docker.md
+  - Attu: https://github.com/zilliztech/attu
+- Streamlit Documentation: https://docs.streamlit.io/
 - OpenAI API: https://platform.openai.com/docs
