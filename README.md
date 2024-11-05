@@ -8,7 +8,7 @@
 
 ## 📋 Yêu cầu hệ thống
 
-- Python 3.8 trở lên (Tải tại: https://www.python.org/downloads/)
+- Python 3.8 trở lên, khuyến nghị version 3.8.18 (Tải tại: https://www.python.org/downloads/)
 - Docker Desktop (Tải tại: https://www.docker.com/products/docker-desktop/)
 - OpenAI API key (Đăng ký tại: https://platform.openai.com/api-keys)
 - Khoảng 4GB RAM trống
@@ -16,9 +16,11 @@
 ## 🚀 Các bước cài đặt và chạy
 
 ### Bước 1: Cài đặt thư viện Python
-
-Mở Terminal/Command Prompt và chạy lệnh sau:
-pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit rank_bm25
+- Khuyến nghị dùng python version 3.8.18.
+- Nên dùng conda, setup environment qua câu lệnh: conda create -n myenv python=3.8.18
+- Sau đó active enviroment qua câu lệnh: conda activate myenv
+- Mở Terminal/Command Prompt và chạy lệnh sau:
+  - pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit rank_bm25
 
 > 💡 Nếu gặp lỗi thiếu thư viện, chạy: `pip install tên-thư-viện-còn-thiếu`
 
