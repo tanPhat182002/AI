@@ -40,9 +40,8 @@ pip install langchain langchain-core langchain-community langchain-openai python
 
 Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
 
-bash
-cd src
-streamlit run main.py
+1. cd src
+2. streamlit run main.py
 
 ## 💻 Cách sử dụng
 
