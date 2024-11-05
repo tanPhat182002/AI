@@ -18,7 +18,7 @@
 ### Bước 1: Cài đặt thư viện Python
 
 Mở Terminal/Command Prompt và chạy lệnh sau:
-pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit
+pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit rank_bm25
 
 > 💡 Nếu gặp lỗi thiếu thư viện, chạy: `pip install tên-thư-viện-còn-thiếu`
 
