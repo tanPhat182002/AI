@@ -30,6 +30,11 @@ pip install langchain langchain-core langchain-community langchain-openai python
 
 > ⚠️ Đợi đến khi thấy thông báo "Milvus is ready"
 
+Option: Cài đặt attu để view data đã seed vào Milvus:
+1. Chạy lệnh: docker run -p 8000:3000 -e MILVUS_URL={milvus server IP}:19530 zilliz/attu:v2.4
+2. 2 Thay "milvus server IP" bằng IP internet local, cách lấy IP local:
+   - Chạy lệnh: ipconfig hoặc tương tự với các hệ điều hành khác
+
 ### Bước 3: Cấu hình OpenAI API
 
 1. Tạo file `.env` trong thư mục `src`
