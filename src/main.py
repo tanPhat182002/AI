@@ -10,9 +10,10 @@ Chức năng:
 import streamlit as st  # Thư viện tạo giao diện web
 from dotenv import load_dotenv  # Đọc file .env chứa API key
 from seed_data import seed_milvus, seed_milvus_live  # Hàm xử lý dữ liệu
-from agent import get_retriever, get_llm_and_agent  # Khởi tạo AI
-from langchain.callbacks import StreamlitCallbackHandler  # Hiển thị kết quả realtime
-from langchain.memory import StreamlitChatMessageHistory  # Lưu lịch sử chat
+from agent import get_retriever as get_openai_retriever, get_llm_and_agent as get_openai_agent
+from local_ollama import get_retriever as get_ollama_retriever, get_llm_and_agent as get_ollama_agent
+from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 # === THIẾT LẬP GIAO DIỆN TRANG WEB ===
 def setup_page():
@@ -38,74 +39,118 @@ def initialize_app():
 # === THANH CÔNG CỤ BÊN TRÁI ===
 def setup_sidebar():
     """
-    Tạo thanh công cụ bên trái với các tùy chọn:
-    1. Chọn nguồn dữ liệu (File hoặc URL)
-    2. Nhập thông tin file/URL
-    3. Nút tải/crawl dữ liệu
+    Tạo thanh công cụ bên trái với các tùy chọn
     """
     with st.sidebar:
         st.title("⚙️ Cấu hình")
         
-        # Chọn nguồn dữ liệu
+        # Phần 1: Chọn Embeddings Model trước
+        st.header("🔤 Embeddings Model")
+        embeddings_choice = st.radio(
+            "Chọn Embeddings Model:",
+            ["OpenAI", "Ollama"]
+        )
+        use_ollama_embeddings = (embeddings_choice == "Ollama")
+        
+        # Phần 2: Cấu hình Data
+        st.header("📚 Nguồn dữ liệu")
         data_source = st.radio(
             "Chọn nguồn dữ liệu:",
             ["File Local", "URL trực tiếp"]
         )
         
-        # Xử lý tùy theo lựa chọn
+        # Xử lý nguồn dữ liệu dựa trên embeddings đã chọn
         if data_source == "File Local":
-            handle_local_file()
+            handle_local_file(use_ollama_embeddings)
         else:
-            handle_url_input()
+            handle_url_input(use_ollama_embeddings)
+        
+        # Phần 3: Chọn Model để trả lời (độc lập với embeddings)
+        st.header("🤖 Model AI")
+        model_choice = st.radio(
+            "Chọn AI Model để trả lời:",
+            ["OpenAI GPT", "Ollama (Local)"]
+        )
+        
+        return model_choice
 
-def handle_local_file():
+def handle_local_file(use_ollama_embeddings: bool):
     """
-    Xử lý khi người dùng chọn tải file:
-    1. Nhập tên file và thư mục
-    2. Tải dữ liệu khi nhấn nút
+    Xử lý khi người dùng chọn tải file
     """
+    collection_name = st.text_input(
+        "Tên collection trong Milvus:", 
+        "data_test",
+        help="Nhập tên collection bạn muốn lưu trong Milvus"
+    )
     filename = st.text_input("Tên file JSON:", "stack.json")
     directory = st.text_input("Thư mục chứa file:", "data")
     
     if st.button("Tải dữ liệu từ file"):
+        if not collection_name:
+            st.error("Vui lòng nhập tên collection!")
+            return
+            
         with st.spinner("Đang tải dữ liệu..."):
-            seed_milvus('http://localhost:19530', 'data_test', filename, directory)
-        st.success("Đã tải dữ liệu thành công!")
+            try:
+                seed_milvus(
+                    'http://localhost:19530', 
+                    collection_name, 
+                    filename, 
+                    directory, 
+                    use_ollama=use_ollama_embeddings
+                )
+                st.success(f"Đã tải dữ liệu thành công vào collection '{collection_name}'!")
+            except Exception as e:
+                st.error(f"Lỗi khi tải dữ liệu: {str(e)}")
 
-def handle_url_input():
+def handle_url_input(use_ollama_embeddings: bool):
     """
-    Xử lý khi người dùng chọn crawl URL:
-    1. Nhập URL cần crawl
-    2. Bắt đầu crawl khi nhấn nút
+    Xử lý khi người dùng chọn crawl URL
     """
+    collection_name = st.text_input(
+        "Tên collection trong Milvus:", 
+        "data_test_live",
+        help="Nhập tên collection bạn muốn lưu trong Milvus"
+    )
     url = st.text_input("Nhập URL:", "https://www.stack-ai.com/docs")
+    
     if st.button("Crawl dữ liệu"):
+        if not collection_name:
+            st.error("Vui lòng nhập tên collection!")
+            return
+            
         with st.spinner("Đang crawl dữ liệu..."):
-            seed_milvus_live(url, 'http://localhost:19530', 'data_test_live_v2', 'stack-ai')
-        st.success("Đã crawl dữ liệu thành công!")
+            try:
+                seed_milvus_live(
+                    url, 
+                    'http://localhost:19530', 
+                    collection_name, 
+                    'stack-ai', 
+                    use_ollama=use_ollama_embeddings
+                )
+                st.success(f"Đã crawl dữ liệu thành công vào collection '{collection_name}'!")
+            except Exception as e:
+                st.error(f"Lỗi khi crawl dữ liệu: {str(e)}")
 
 # === GIAO DIỆN CHAT CHÍNH ===
-def setup_chat_interface():
-    """
-    Tạo giao diện chat chính:
-    1. Hiển thị tiêu đề
-    2. Khởi tạo lịch sử chat
-    3. Hiển thị các tin nhắn
-    """
+def setup_chat_interface(model_choice):
     st.title("💬 AI Assistant")
-    st.caption("🚀 Trợ lý AI được hỗ trợ bởi LangChain và OpenAI")
-
-    # Khởi tạo bộ nhớ chat
+    
+    # Caption động theo model
+    if model_choice == "OpenAI GPT":
+        st.caption("🚀 Trợ lý AI được hỗ trợ bởi LangChain và OpenAI GPT-4")
+    else:
+        st.caption("🚀 Trợ lý AI được hỗ trợ bởi LangChain và Ollama LLaMA2")
+    
     msgs = StreamlitChatMessageHistory(key="langchain_messages")
     
-    # Tạo tin nhắn chào mừng nếu là chat mới
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Tôi có thể giúp gì cho bạn?"}
         ]
         msgs.add_ai_message("Tôi có thể giúp gì cho bạn?")
 
-    # Hiển thị lịch sử chat
     for msg in st.session_state.messages:
         role = "assistant" if msg["role"] == "assistant" else "human"
         st.chat_message(role).write(msg["content"])
@@ -154,20 +199,20 @@ def handle_user_input(msgs, agent_executor):
 # === HÀM CHÍNH ===
 def main():
     """
-    Hàm chính điều khiển luồng chương trình:
-    1. Khởi tạo ứng dụng
-    2. Tạo giao diện
-    3. Xử lý tương tác người dùng
+    Hàm chính điều khiển luồng chương trình
     """
     initialize_app()
-    setup_sidebar()
-    msgs = setup_chat_interface()
+    model_choice = setup_sidebar()  # Chỉ cần trả về model choice để xử lý chat
+    msgs = setup_chat_interface(model_choice)
     
-    # Khởi tạo AI
-    retriever = get_retriever()
-    agent_executor = get_llm_and_agent(retriever)
+    # Khởi tạo AI dựa trên lựa chọn model để trả lời
+    if model_choice == "OpenAI GPT":
+        retriever = get_openai_retriever()
+        agent_executor = get_openai_agent(retriever)
+    else:
+        retriever = get_ollama_retriever()
+        agent_executor = get_ollama_agent(retriever)
     
-    # Xử lý chat
     handle_user_input(msgs, agent_executor)
 
 # Chạy ứng dụng

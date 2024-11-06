@@ -1,20 +1,24 @@
-# Import các thư viện cần thiết
-from langchain.tools.retriever import create_retriever_tool  # Tạo công cụ tìm kiếm
-from langchain_openai import ChatOpenAI  # Model ngôn ngữ OpenAI
-from langchain.agents import AgentExecutor, create_openai_functions_agent  # Tạo và thực thi agent
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # Xử lý prompt
-from seed_data import seed_milvus, connect_to_milvus  # Kết nối với Milvus
-from langchain_community.callbacks.streamlit import StreamlitCallbackHandler  # Xử lý callback cho Streamlit
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory  # Lưu trữ lịch sử chat
-from langchain.retrievers import EnsembleRetriever  # Kết hợp nhiều retriever
-from langchain_community.retrievers import BM25Retriever  # Retriever dựa trên BM25
-from langchain_core.documents import Document  # Lớp Document
+from langchain.tools.retriever import create_retriever_tool
+from langchain_ollama import ChatOllama
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from seed_data import seed_milvus, connect_to_milvus
+from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+from langchain_core.documents import Document
+
 
 def get_retriever(collection_name: str = "data_test") -> EnsembleRetriever:
     """
     Tạo một ensemble retriever kết hợp vector search (Milvus) và BM25
     Args:
         collection_name (str): Tên collection trong Milvus để truy vấn
+    Returns:
+        EnsembleRetriever: Retriever kết hợp với tỷ trọng:
+            - 70% Milvus vector search (k=4 kết quả)
+            - 30% BM25 text search (k=4 kết quả)
     """
     try:
         # Kết nối với Milvus và tạo vector retriever
@@ -54,35 +58,29 @@ def get_retriever(collection_name: str = "data_test") -> EnsembleRetriever:
         ]
         return BM25Retriever.from_documents(default_doc)
 
-# Tạo công cụ tìm kiếm cho agent
-tool = create_retriever_tool(
-    get_retriever(),
-    "find",
-    "Search for information of Stack AI."
-)
 
-def get_llm_and_agent(_retriever) -> AgentExecutor:
+def get_llm_and_agent(retriever):
     """
-    Khởi tạo Language Model và Agent với cấu hình cụ thể
-    Args:
-        _retriever: Retriever đã được cấu hình để tìm kiếm thông tin
-    Returns:
-        AgentExecutor: Agent đã được cấu hình với:
-            - Model: GPT-4
-            - Temperature: 0
-            - Streaming: Enabled
-            - Custom system prompt
-    Chú ý:
-        - Yêu cầu OPENAI_API_KEY đã được cấu hình
-        - Agent được thiết lập với tên "ChatchatAI"
-        - Sử dụng chat history để duy trì ngữ cảnh hội thoại
+    Khởi tạo LLM và agent với Ollama
     """
-    # Khởi tạo ChatOpenAI với chế độ streaming
-    llm = ChatOpenAI(temperature=0, streaming=True, model="gpt-4")
+    # Tạo retriever tool
+    tool = create_retriever_tool(
+        retriever,
+        "find_documents",
+        "Search for information of Stack AI."
+    )
+
+    # Khởi tạo ChatOllama
+    llm = ChatOllama(
+        model="llama2",  # hoặc model khác tùy chọn
+        temperature=0,
+        streaming=True
+    )
+
     tools = [tool]
-    
-    # Thiết lập prompt template cho agent
-    system = """You are an expert at AI. Your name is ChatchatAI."""
+
+    # Thiết lập prompt template
+    system = """You are an expert at AI. Your name is ChatchatAI. For Stack AI questions call the find_document tool"""
     prompt = ChatPromptTemplate.from_messages([
         ("system", system),
         MessagesPlaceholder(variable_name="chat_history"),
@@ -90,10 +88,11 @@ def get_llm_and_agent(_retriever) -> AgentExecutor:
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
 
-    # Tạo và trả về agent
+    # Tạo agent
     agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt)
     return AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# Khởi tạo retriever và agent
+
+# Khởi tạo retriever và agent với collection mặc định
 retriever = get_retriever()
 agent_executor = get_llm_and_agent(retriever)

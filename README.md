@@ -1,10 +1,10 @@
 # 🤖 Xây Dựng Chatbot AI với LangChain và Python
 
 ## RAG PIPELINE
+
 <p align="center">
   <img src="https://media.licdn.com/dms/image/v2/D4D22AQHhEYuJKGao6A/feedshare-shrink_1280/feedshare-shrink_1280/0/1710748558987?e=1733356800&v=beta&t=5MXnGzPFdue8HbgT2_GFFKT_4qPuz14jqdCsK9MosFo" alt="rag" width="400"/>
 </p>
-
 
 ## 📋 Yêu cầu hệ thống
 
@@ -15,63 +15,91 @@
 
 ## 🚀 Các bước cài đặt và chạy
 
-### Bước 1: Cài đặt thư viện Python
+### Bước 1: Cài đặt môi trường
+
 - Khuyến nghị dùng python version 3.8.18.
 - Nên dùng conda, setup environment qua câu lệnh: conda create -n myenv python=3.8.18
 - Sau đó active enviroment qua câu lệnh: conda activate myenv
 - Mở Terminal/Command Prompt và chạy lệnh sau:
-  - pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit rank_bm25
+  - pip install -r requirements.txt
 
-> 💡 Nếu gặp lỗi thiếu thư viện, chạy: `pip install tên-thư-viện-còn-thiếu`
+### Bước 2: Tải xuống Ollama
 
-### Bước 2: Cài đặt và chạy Milvus Database
+- Truy cập: https://ollama.com/download
+- Chọn phiên bản phù hợp với hệ điều hành
+- Cài đặt theo hướng dẫn
+- Chạy lệnh: ollama run llama2
+
+### Bước 3: Cài đặt và chạy Milvus Database
 
 1. Khởi động Docker Desktop
 2. Mở Terminal/Command Prompt, chạy lệnh:
    docker compose up --build
 
-> ⚠️ Đợi đến khi thấy thông báo "Milvus is ready"
-
 Option: Cài đặt attu để view data đã seed vào Milvus:
+
 1. Chạy lệnh: docker run -p 8000:3000 -e MILVUS_URL={milvus server IP}:19530 zilliz/attu:v2.4
 2. 2 Thay "milvus server IP" bằng IP internet local, cách lấy IP local:
    - Chạy lệnh: ipconfig hoặc tương tự với các hệ điều hành khác
 
-### Bước 3: Cấu hình OpenAI API
+### Bước 4: Cấu hình OpenAI API
 
 1. Tạo file `.env` trong thư mục `src`
 2. Thêm API key vào file:
    OPENAI_API_KEY=sk-your-api-key-here
 
-### Bước 4: Chạy ứng dụng
+### Bước 5: Chạy ứng dụng
 
-Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
+- Crawl data về loal trước khi bắt đầu chạy ứng dụng. Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
 
-1. cd src
-2. streamlit run main.py
+  - cd src
+  - python crawl_data.py
+
+- Sau đó chạy ứng dụng bằng câu lệnh:
+
+  - streamlit run main.py
 
 ## 💻 Cách sử dụng
 
-### 1. Tải dữ liệu (Chọn 1 trong 2 cách)
+### 1. Khởi động ứng dụng
 
-**Cách 1: Từ file local**
+1. Đảm bảo Docker Desktop đang chạy
+2. Đảm bảo Ollama đang chạy với mô hình llama2
+3. Mở Terminal/Command Prompt, di chuyển vào thư mục src
+4. Chạy lệnh: `streamlit run main.py`
 
-1. Ở sidebar bên trái, chọn "File Local"
-2. Nhập tên file JSON (mặc định: stack.json)
-3. Nhập tên thư mục (mặc định: data)
+### 2. Tải và xử lý dữ liệu
+
+**Cách 1: Từ file JSON local**
+
+1. Chọn tab "File Local" ở thanh bên
+2. Nhập đường dẫn thư mục chứa file JSON (mặc định: data)
+3. Nhập tên file JSON (mặc định: stack.json)
 4. Nhấn "Tải dữ liệu từ file"
+5. Đợi hệ thống xử lý và thông báo thành công
 
 **Cách 2: Từ URL**
 
-1. Ở sidebar bên trái, chọn "URL trực tiếp"
-2. Nhập URL cần lấy dữ liệu
+1. Chọn tab "URL trực tiếp" ở thanh bên
+2. Nhập URL cần crawl dữ liệu
 3. Nhấn "Crawl dữ liệu"
+4. Đợi hệ thống crawl và xử lý dữ liệu
 
-### 2. Chat với AI
+### 3. Tương tác với chatbot
 
-- Nhập câu hỏi vào ô chat ở dưới màn hình
-- Nhấn Enter hoặc nút gửi
-- Đợi AI trả lời
+1. Nhập câu hỏi vào ô chat ở phần dưới màn hình
+2. Nhấn Enter hoặc nút gửi để gửi câu hỏi
+3. Chatbot sẽ:
+   - Tìm kiếm thông tin liên quan trong cơ sở dữ liệu
+   - Kết hợp kết quả từ nhiều nguồn
+   - Tạo câu trả lời dựa trên ngữ cảnh
+4. Lịch sử chat sẽ được hiển thị ở phần chính của màn hình
+
+### 4. Xem thông tin hệ thống
+
+- Theo dõi trạng thái kết nối Milvus ở thanh bên
+- Kiểm tra số lượng documents đã được tải
+- Xem thông tin về mô hình đang sử dụng
 
 ## ❗ Xử lý lỗi thường gặp
 

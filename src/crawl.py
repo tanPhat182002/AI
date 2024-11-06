@@ -88,7 +88,7 @@ def main():
     # Crawl dữ liệu từ trang docs của stack-ai
     data = crawl_web('https://www.stack-ai.com/docs')
     # Lưu dữ liệu vào thư mục data_v2
-    save_data_locally(data, 'stack.json', 'data_v3')
+    save_data_locally(data, 'stack.json', 'data')
     print('data: ', data)  # In dữ liệu đã crawl
 
 # Kiểm tra nếu file được chạy trực tiếp
