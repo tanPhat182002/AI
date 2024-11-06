@@ -50,7 +50,7 @@ Option: Cài đặt attu để view data đã seed vào Milvus:
 
 ### Bước 5: Chạy ứng dụng
 
-- Crawl data về loal trước khi bắt đầu chạy ứng dụng. Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
+- Crawl data về local trước khi bắt đầu chạy ứng dụng. Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
 
   - cd src
   - python crawl_data.py
