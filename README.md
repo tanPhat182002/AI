@@ -9,28 +9,32 @@
 
 ## 🚀 Các bước cài đặt và chạy
 
-### Bước 1: Cài đặt thư viện Python
+### Bước 1: Cài đặt môi trường
 
 Mở Terminal/Command Prompt và chạy lệnh sau:
-pip install langchain langchain-core langchain-community langchain-openai python-dotenv beautifulsoup4 langchain_milvus streamlit
 
-> 💡 Nếu gặp lỗi thiếu thư viện, chạy: `pip install tên-thư-viện-còn-thiếu`
+- pip install -r requirements.txt
 
-### Bước 2: Cài đặt và chạy Milvus Database
+### Bước 2: Tải xuống Ollama
+
+- Truy cập: https://ollama.com/download
+- Chọn phiên bản phù hợp với hệ điều hành
+- Cài đặt theo hướng dẫn
+- Chạy lệnh: ollama run llama2
+
+### Bước 3: Cài đặt và chạy Milvus Database
 
 1. Khởi động Docker Desktop
 2. Mở Terminal/Command Prompt, chạy lệnh:
    docker compose up --build
 
-> ⚠️ Đợi đến khi thấy thông báo "Milvus is ready"
-
-### Bước 3: Cấu hình OpenAI API
+### Bước 4: Cấu hình OpenAI API
 
 1. Tạo file `.env` trong thư mục `src`
 2. Thêm API key vào file:
    OPENAI_API_KEY=sk-your-api-key-here
 
-### Bước 4: Chạy ứng dụng
+### Bước 5: Chạy ứng dụng
 
 Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
 

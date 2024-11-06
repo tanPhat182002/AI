@@ -80,7 +80,7 @@ def get_llm_and_agent(retriever):
     tools = [tool]
 
     # Thiết lập prompt template
-    system = """You are an expert at AI. Your name is ChatchatAI."""
+    system = """You are an expert at AI. Your name is ChatchatAI. For Stack AI questions call the find_document tool"""
     prompt = ChatPromptTemplate.from_messages([
         ("system", system),
         MessagesPlaceholder(variable_name="chat_history"),
