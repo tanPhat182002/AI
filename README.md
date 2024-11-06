@@ -1,8 +1,14 @@
 # 🤖 Xây Dựng Chatbot AI với LangChain và Python
 
+## RAG PIPELINE
+<p align="center">
+  <img src="https://media.licdn.com/dms/image/v2/D4D22AQHhEYuJKGao6A/feedshare-shrink_1280/feedshare-shrink_1280/0/1710748558987?e=1733356800&v=beta&t=5MXnGzPFdue8HbgT2_GFFKT_4qPuz14jqdCsK9MosFo" alt="rag" width="400"/>
+</p>
+
+
 ## 📋 Yêu cầu hệ thống
 
-- Python 3.8 trở lên (Tải tại: https://www.python.org/downloads/)
+- Python 3.8 trở lên, khuyến nghị version 3.8.18 (Tải tại: https://www.python.org/downloads/)
 - Docker Desktop (Tải tại: https://www.docker.com/products/docker-desktop/)
 - OpenAI API key (Đăng ký tại: https://platform.openai.com/api-keys)
 - Khoảng 4GB RAM trống
@@ -10,10 +16,11 @@
 ## 🚀 Các bước cài đặt và chạy
 
 ### Bước 1: Cài đặt môi trường
-
-Mở Terminal/Command Prompt và chạy lệnh sau:
-
-- pip install -r requirements.txt
+- Khuyến nghị dùng python version 3.8.18.
+- Nên dùng conda, setup environment qua câu lệnh: conda create -n myenv python=3.8.18
+- Sau đó active enviroment qua câu lệnh: conda activate myenv
+- Mở Terminal/Command Prompt và chạy lệnh sau:
+  - pip install -r requirements.txt
 
 ### Bước 2: Tải xuống Ollama
 
@@ -28,6 +35,11 @@ Mở Terminal/Command Prompt và chạy lệnh sau:
 2. Mở Terminal/Command Prompt, chạy lệnh:
    docker compose up --build
 
+Option: Cài đặt attu để view data đã seed vào Milvus:
+1. Chạy lệnh: docker run -p 8000:3000 -e MILVUS_URL={milvus server IP}:19530 zilliz/attu:v2.4
+2. 2 Thay "milvus server IP" bằng IP internet local, cách lấy IP local:
+   - Chạy lệnh: ipconfig hoặc tương tự với các hệ điều hành khác
+
 ### Bước 4: Cấu hình OpenAI API
 
 1. Tạo file `.env` trong thư mục `src`
@@ -38,9 +50,8 @@ Mở Terminal/Command Prompt và chạy lệnh sau:
 
 Mở Terminal/Command Prompt, di chuyển vào thư mục src và chạy:
 
-bash
-cd src
-streamlit run main.py
+1. cd src
+2. streamlit run main.py
 
 ## 💻 Cách sử dụng
 
